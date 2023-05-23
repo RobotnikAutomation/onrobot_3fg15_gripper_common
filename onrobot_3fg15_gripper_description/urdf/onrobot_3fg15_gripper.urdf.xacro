@@ -6,7 +6,7 @@
     <xacro:macro name="onrobot_3fg15_gripper" params="prefix parent *origin position:=2">
         
         <joint name="${prefix}_base_joint" type="fixed">
-            <insert_block name="origin"/>
+            <xacro:insert_block name="origin"/>
             <parent link="${parent}"/>
             <child link="${prefix}_base_link"/>
         </joint>
