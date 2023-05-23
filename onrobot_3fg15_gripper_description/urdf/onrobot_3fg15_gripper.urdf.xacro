@@ -14,9 +14,9 @@
         <!-- BASE LINK -->
         <link name="${prefix}_base_link">
             <inertial>
-                <mass value="0.25" />
+                <mass value="0.95" />
                 <origin xyz="0 0 0" />
-                <inertia  ixx="1.0" ixy="0.0"  ixz="0.0"  iyy="1.0"  iyz="0.0"  izz="1.0" />
+                <inertia  ixx="0.004541317" ixy="0.0"  ixz="0.0"  iyy="0.004541317"  iyz="0.0"  izz="0.003952633" />
             </inertial>
 
             <visual>
@@ -43,8 +43,34 @@
             <turnGravityOff>false</turnGravityOff>
         </gazebo>
 
+        <joint name="${prefix}contact_joint" type="prismatic">
+            <limit lower="0" upper="0.00001" effort="1.0" velocity="0.00001"/> 
+            <origin xyz="0.0 0 0.18" rpy="0 0 0" />
+            <parent link="${prefix}_base_link"/>
+            <child link="${prefix}contact_link"/>
+        </joint>
 
-        <xacro:macro name="mimic_joint_plugin_gazebo" params="parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
+        <!-- BASE LINK -->
+        <link name="${prefix}contact_link">
+            <inertial>
+                <mass value="0.095" />
+                <origin xyz="0 0 0" />
+                <inertia  ixx="0.0004541317" ixy="0.0"  ixz="0.0"  iyy="0.0004541317"  iyz="0.0"  izz="0.0003952633" />
+            </inertial>
+        </link>
+        
+        <transmission name="${prefix}contact_joint">
+            <type>transmission_interface/SimpleTransmission</type>
+            <actuator name="${prefix}contact_joint_motor">
+                <mechanicalReduction>1</mechanicalReduction>
+                <motorTorqueConstant>1</motorTorqueConstant>
+            </actuator>
+            <joint name="${prefix}contact_joint" >
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </joint>
+        </transmission>
+
+<!--         <xacro:macro name="mimic_joint_plugin_gazebo" params="parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
             <gazebo>
                 <plugin name="${mimic_joint}_mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
                     <joint>${parent_joint}</joint>
@@ -61,12 +87,23 @@
                     </xacro:unless>
                 </plugin>
             </gazebo>
+        </xacro:macro> -->
+
+        <xacro:macro name="ros_link_attacher_plugin">
+          <gazebo>
+            <plugin name="ros_link_attacher_plugin" filename="libgazebo_ros_link_attacher.so"/>"
+          </gazebo>
         </xacro:macro>
 
+        <joint name="${prefix}_upper_finger_joint" type="fixed">
+            <origin xyz="0.1022 0.0 -0.03" rpy="0.0 0.0 0.0" /> 
+            <parent link="${prefix}_base_link"/>
+            <child link="${prefix}_upper_finger" />
+        </joint>
 
         <!-- FINGER UPPER -->
 
-        <joint name="${prefix}_upper_finger_joint" type="revolute">
+        <!--joint name="${prefix}_upper_finger_joint" type="revolute">
             <limit lower="0" upper="2.86775049" effort="1.0" velocity="0.6"/> 
             <axis xyz="1 0 0"/>
             <origin xyz="0.1022 0.0 -0.03" rpy="0.0 0.0 0.0" /> 
@@ -84,15 +121,15 @@
             <joint name="${prefix}_upper_finger_joint" >
                 <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
             </joint>
-        </transmission>
+        </transmission-->
 
         <link name="${prefix}_upper_finger">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.003333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
@@ -139,11 +176,11 @@
 
         <link name="${prefix}_upper_thumb">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.0033333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
@@ -171,9 +208,15 @@
         </gazebo>
 
 
+        <joint name="${prefix}_left_finger_joint" type="fixed">
+            <origin xyz="0.1022 0.02598 0.015" rpy="2.0944 0 0" /> 
+            <parent link="${prefix}_base_link"/>
+            <child link="${prefix}_left_finger" />
+        </joint>
+
         <!-- FINGER LEFT -->
 
-        <joint name="${prefix}_left_finger_joint" type="revolute">
+        <!--joint name="${prefix}_left_finger_joint" type="revolute">
             <limit lower="0" upper="2.86775049" effort="1.0" velocity="0.6"/> 
             <axis xyz="1 0 0"/>
             <origin xyz="0.1022 0.02598 0.015" rpy="2.0944 0 0" /> 
@@ -184,15 +227,15 @@
         </joint>
 
         <xacro:mimic_joint_plugin_gazebo parent_joint="${prefix}_upper_finger_joint" 
-                                         mimic_joint="${prefix}_left_finger_joint" has_pid="false" multiplier="1.0" max_effort="10.0" />
+                                         mimic_joint="${prefix}_left_finger_joint" has_pid="false" multiplier="1.0" max_effort="10.0" /-->
 
         <link name="${prefix}_left_finger">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.0033333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
@@ -238,11 +281,11 @@
         
         <link name="${prefix}_left_thumb">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.00333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
@@ -269,10 +312,15 @@
             <turnGravityOff>false</turnGravityOff>
         </gazebo>
 
+        <joint name="${prefix}_right_finger_joint" type="fixed">
+            <origin xyz="0.1022 -0.02598 0.015" rpy="-2.0944 0 0" /> 
+            <parent link="${prefix}_base_link"/>
+            <child link="${prefix}_right_finger" />
+        </joint>
 
         <!-- FINGER RIGHT -->
 
-        <joint name="${prefix}_right_finger_joint" type="revolute">
+        <!--joint name="${prefix}_right_finger_joint" type="revolute">
             <limit lower="0" upper="2.86775049" effort="1.0" velocity="0.6"/> 
             <axis xyz="1 0 0"/>
             <origin xyz="0.1022 -0.02598 0.015" rpy="-2.0944 0 0" /> 
@@ -283,15 +331,15 @@
         </joint>
 
         <xacro:mimic_joint_plugin_gazebo parent_joint="${prefix}_upper_finger_joint" 
-                                         mimic_joint="${prefix}_right_finger_joint" has_pid="false" multiplier="1.0" max_effort="10.0" />
+                                         mimic_joint="${prefix}_right_finger_joint" has_pid="false" multiplier="1.0" max_effort="10.0" /-->
 
         <link name="${prefix}_right_finger">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.003333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
@@ -337,11 +385,11 @@
         
         <link name="${prefix}_right_thumb">
             <inertial>
-                <mass value="0.1" />
+                <mass value="0.0033333" />
                 <origin xyz="0 0 0" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                    iyy="1.0" iyz="0.0" 
-                    izz="1.0" />
+            <inertia ixx="0.000000277" ixy="0.0" ixz="0.0"
+                    iyy="0.000000277" iyz="0.0" 
+                    izz="0.000000056" />
             </inertial>
 
             <visual>
