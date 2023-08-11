@@ -6,7 +6,7 @@
     <xacro:macro name="onrobot_3fg15_gripper" params="prefix parent *origin position:=2">
         
         <joint name="${prefix}_base_joint" type="fixed">
-            <insert_block name="origin"/>
+            <xacro:insert_block name="origin" />
             <parent link="${parent}"/>
             <child link="${prefix}_base_link"/>
         </joint>
@@ -42,27 +42,6 @@
             <material>Gazebo/Grey</material>
             <turnGravityOff>false</turnGravityOff>
         </gazebo>
-
-
-        <xacro:macro name="mimic_joint_plugin_gazebo" params="parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
-            <gazebo>
-                <plugin name="${mimic_joint}_mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
-                    <joint>${parent_joint}</joint>
-                    <mimicJoint>${mimic_joint}</mimicJoint>
-                    <xacro:if value="${has_pid}">                    
-                    <hasPID />
-                    </xacro:if>
-                    <multiplier>${multiplier}</multiplier>
-                    <offset>${offset}</offset>
-                    <sensitiveness>${sensitiveness}</sensitiveness>   
-                    <maxEffort>${max_effort}</maxEffort>              
-                    <xacro:unless value="${robot_namespace == ''}">
-                        <robotNamespace>($robot_namespace)</robotNamespace>
-                    </xacro:unless>
-                </plugin>
-            </gazebo>
-        </xacro:macro>
-
 
         <!-- FINGER UPPER -->
 
@@ -119,7 +98,24 @@
             <turnGravityOff>false</turnGravityOff>
         </gazebo>
 
-
+        <xacro:macro name="mimic_joint_plugin_gazebo" params="parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
+            <gazebo>
+                <plugin name="${mimic_joint}_mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+                    <joint>${parent_joint}</joint>
+                    <mimicJoint>${mimic_joint}</mimicJoint>
+                    <xacro:if value="${has_pid}">                    
+                    <hasPID />
+                    </xacro:if>
+                    <multiplier>${multiplier}</multiplier>
+                    <offset>${offset}</offset>
+                    <sensitiveness>${sensitiveness}</sensitiveness>   
+                    <maxEffort>${max_effort}</maxEffort>              
+                    <xacro:unless value="${robot_namespace == ''}">
+                        <robotNamespace>($robot_namespace)</robotNamespace>
+                    </xacro:unless>
+                </plugin>
+            </gazebo>
+        </xacro:macro>
          <!-- THUMB UPPER -->
 
         <joint name="${prefix}_upper_thumb_joint" type="fixed">
